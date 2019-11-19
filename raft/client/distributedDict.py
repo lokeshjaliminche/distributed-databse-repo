@@ -22,6 +22,9 @@ class DistributedDict(collections.UserDict, AbstractClient):
 
     def __delitem__(self, key):
         self.refresh(force=True)
+        #this indicates that the data is getting deleted from both local and remote.
+        #checkout append_log_function
+
         del self.data[self.__keytransform__(key)]
         self._append_log({'action': 'delete', 'key': key})
 
@@ -33,15 +36,22 @@ class DistributedDict(collections.UserDict, AbstractClient):
         return super().__repr__()
 
     def refresh(self, force=False):
+
+        print('distributed_dict', 'refresh', self.data)
         if force or self.refresh_policy.can_update():
             self.data = self._get_state()
 
     def _append_log(self, payload):
+        print(payload)
         for attempt in range(self.append_retry_attempts):
+            #this appendlog function call append_log function of the super class which is responsible for
+            #taking appropriate action.
+            #parent class of this function is AbstractClient checkout that class for details.
             response = super()._append_log(payload)
             if response['success']:
                 break
         # TODO: logging
+        print(response)
         return response
 
 if __name__ == '__main__':

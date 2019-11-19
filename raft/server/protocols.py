@@ -69,12 +69,15 @@ class ClientProtocol(asyncio.Protocol):
         self.orchestrator = orchestrator
 
     def connection_made(self, transport):
+        print('PeerProtocol', 'connection_made', transport)
         logger.debug('Established connection with client %s:%s',
                      *transport.get_extra_info('peername'))
         self.transport = transport
 
     def data_received(self, data):
+        print('PeerProtocol', 'data_received', data)
         message = msgpack.unpackb(data, encoding='utf-8')
+        print('PeerProtocol', 'data_received', message)
         self.orchestrator.data_received_client(self, message)
 
     def connection_lost(self, exc):
@@ -82,6 +85,7 @@ class ClientProtocol(asyncio.Protocol):
                      *self.transport.get_extra_info('peername'))
 
     def send(self, message):
+        print('PeerProtocol', 'send', message)
         self.transport.write(msgpack.packb(
             message, use_bin_type=True, default=extended_msgpack_serializer))
         self.transport.close()

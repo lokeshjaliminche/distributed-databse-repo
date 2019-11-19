@@ -32,6 +32,8 @@ class AbstractClient:
 
     def _append_log(self, payload):
         """Append to remote log."""
+        print('abstractclient','append', payload)
+        #In this function we are sending request to server with the payload and action specified
         return self._request({'type': 'append', 'data': payload})
 
     @property
