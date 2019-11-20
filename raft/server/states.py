@@ -312,17 +312,17 @@ class Leader(State):
 
     def on_client_append(self, protocol, msg):
         """Append new entries to Leader log."""
-        entry = {'term': self.persist['currentTerm'], 'data': msg['data']}
 
         path = join(config.storage, 'data')
         pdb = persistdb(path)
 
         if msg['data']['action'] == 'change':
             pdb.__setitem__(msg['data']['key'], msg['data']['value'])
-
         else:
-            pdb.__delitem__(msg['data']['key'])
+            if msg['data']['action'] == 'delete':
+                pdb.__delitem__(msg['data']['key'])
 
+        entry = {'term': self.persist['currentTerm'], 'data': msg['data']}
 
         if msg['data']['key'] == 'cluster':
             protocol.send({'type': 'result', 'success': False})
@@ -334,6 +334,8 @@ class Leader(State):
         self.on_peer_response_append(
             self.volatile['address'], {'success': True,
                                        'matchIndex': self.log.commitIndex})
+
+
 
     def send_client_append_response(self):
         """Respond to client upon commitment of log entries."""
