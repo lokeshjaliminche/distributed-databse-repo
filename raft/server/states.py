@@ -126,7 +126,7 @@ class Follower(State):
         if hasattr(self, 'election_timer'):
             self.election_timer.cancel()
 
-        timeout = randrange(1, 4) * 10 ** (0 if config.debug else -1)
+        timeout = 5
         loop = asyncio.get_event_loop()
         self.election_timer = loop.\
             call_later(timeout, self.orchestrator.change_state, Candidate)
