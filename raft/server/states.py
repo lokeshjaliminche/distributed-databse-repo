@@ -1,9 +1,11 @@
 import asyncio
 import logging
 import statistics
+
+
 from random import randrange
 from os.path import join
-from .utils import PersistentDict, TallyCounter
+from .utils import PersistentDict, TallyCounter, persistdb
 from .log import LogManager
 from .config import config
 
@@ -311,6 +313,17 @@ class Leader(State):
     def on_client_append(self, protocol, msg):
         """Append new entries to Leader log."""
         entry = {'term': self.persist['currentTerm'], 'data': msg['data']}
+
+        path = join(config.storage, 'data')
+        pdb = persistdb(path)
+
+        if msg['data']['action'] == 'change':
+            pdb.__setitem__(msg['data']['key'], msg['data']['value'])
+
+        else:
+            pdb.__delitem__(msg['data']['key'])
+
+
         if msg['data']['key'] == 'cluster':
             protocol.send({'type': 'result', 'success': False})
         self.log.append_entries([entry], self.log.index)

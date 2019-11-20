@@ -5,6 +5,7 @@ import asyncio
 import logging
 import collections
 import msgpack
+import plyvel
 
 MAX_MSGPACK_ARRAY_HEADER_LEN = 5
 logger = logging.getLogger(__name__)
@@ -107,3 +108,15 @@ def extended_msgpack_serializer(obj):
         return serial
     else:
         raise TypeError("Type not serializable")
+
+class persistdb():
+
+    def __init__(self, path=None):
+        self.db = plyvel.DB( path+'leveldb', create_if_missing=True)
+        self.path = path
+
+    def __setitem__(self, key, value):
+        self.db.put(str(key).encode('utf-8'), str(value).encode('utf-8'))
+
+    def __delitem__(self, key):
+        self.db.delete(str(key).encode('utf-8'))
