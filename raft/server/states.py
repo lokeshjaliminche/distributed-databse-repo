@@ -162,17 +162,20 @@ class Follower(State):
         if len(msg['entries']) != 0:
             exmsg = msg['entries'][0]
             print(exmsg)
-            if exmsg['data']['action'] == 'change':
-                print('change')
-                # path = join(config.storage, 'data')
-                # pdb = persistdb(path)
-                # pdb.__setitem__(msg['data']['key'], msg['data']['value'])
+            if exmsg['data']['key'] != 'cluster':
+                if exmsg['data']['action'] == 'change':
+                    print('change')
+                    # path = join(config.storage, 'data')
+                    # pdb = persistdb(path)
+                    # pdb.__setitem__(exmsg['data']['key'], exmsg['data']['value'])
+                    # pdb.closedb(exmsg['data']['key'])
 
-            if exmsg['data']['action'] == 'delete':
-                print('delete')
-                # path = join(config.storage, 'data')
-                # pdb = persistdb(path)
-                # pdb.__delitem__(msg['data']['key'])
+                else:
+                    if exmsg['data']['action'] == 'delete':
+                        print('delete')
+                        # path = join(config.storage, 'data')
+                        # pdb = persistdb(path)
+                        # pdb.__delitem__(msg['data']['key'])
 
         term_is_current = msg['term'] >= self.persist['currentTerm']
         prev_log_term_match = msg['prevLogTerm'] is None or\

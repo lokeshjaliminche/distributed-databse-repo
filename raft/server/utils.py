@@ -120,3 +120,6 @@ class persistdb():
 
     def __delitem__(self, key):
         self.db.delete(str(key).encode('utf-8'))
+
+    def closedb(self, key):
+        self.db.close()
