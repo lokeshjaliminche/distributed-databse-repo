@@ -159,6 +159,21 @@ class Follower(State):
         In the end, the log is scanned for a new cluster config.
         """
 
+        if len(msg['entries']) != 0:
+            exmsg = msg['entries'][0]
+            print(exmsg)
+            if exmsg['data']['action'] == 'change':
+                print('change')
+                # path = join(config.storage, 'data')
+                # pdb = persistdb(path)
+                # pdb.__setitem__(msg['data']['key'], msg['data']['value'])
+
+            if exmsg['data']['action'] == 'delete':
+                print('delete')
+                # path = join(config.storage, 'data')
+                # pdb = persistdb(path)
+                # pdb.__delitem__(msg['data']['key'])
+
         term_is_current = msg['term'] >= self.persist['currentTerm']
         prev_log_term_match = msg['prevLogTerm'] is None or\
             self.log.term(msg['prevLogIndex']) == msg['prevLogTerm']
@@ -288,9 +303,15 @@ class Leader(State):
 
             logger.debug('Sending %s entries to %s. Start index %s',
                          len(msg['entries']), peer, self.nextIndex[peer])
+            #if msg['data']['action'] == 'change':
+
+
+
             self.orchestrator.send_peer(peer, msg)
 
+        #print(msg)
         timeout = randrange(1, 4) * 10 ** (-1 if config.debug else -2)
+        #print(timeout)
         loop = asyncio.get_event_loop()
         self.append_timer = loop.call_later(timeout, self.send_append_entries)
 
@@ -312,7 +333,6 @@ class Leader(State):
 
     def on_client_append(self, protocol, msg):
         """Append new entries to Leader log."""
-
         path = join(config.storage, 'data')
         pdb = persistdb(path)
 
