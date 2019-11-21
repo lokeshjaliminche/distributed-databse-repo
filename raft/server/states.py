@@ -165,17 +165,18 @@ class Follower(State):
             if exmsg['data']['key'] != 'cluster':
                 if exmsg['data']['action'] == 'change':
                     print('change')
-                    # path = join(config.storage, 'data')
-                    # pdb = persistdb(path)
-                    # pdb.__setitem__(exmsg['data']['key'], exmsg['data']['value'])
-                    # pdb.closedb(exmsg['data']['key'])
+                    path = join(config.storage, 'data')
+                    pdb = persistdb(path)
+                    pdb.__setitem__(exmsg['data']['key'], exmsg['data']['value'])
+                    pdb.closedb(exmsg['data']['key'])
 
                 else:
                     if exmsg['data']['action'] == 'delete':
                         print('delete')
-                        # path = join(config.storage, 'data')
-                        # pdb = persistdb(path)
-                        # pdb.__delitem__(msg['data']['key'])
+                        path = join(config.storage, 'data')
+                        pdb = persistdb(path)
+                        pdb.__delitem__(exmsg['data']['key'])
+                        pdb.closedb(exmsg['data']['key'])
 
         term_is_current = msg['term'] >= self.persist['currentTerm']
         prev_log_term_match = msg['prevLogTerm'] is None or\
@@ -203,10 +204,30 @@ class Follower(State):
 
         self._update_cluster()
 
+        # if len(msg['entries']) != 0:
+        #     exmsg = msg['entries'][0]
+        #     print(exmsg)
+        #     if exmsg['data']['key'] != 'cluster':
+        #         if exmsg['data']['action'] == 'change':
+        #             print('change')
+        #             path = join(config.storage, 'data')
+        #             pdb = persistdb(path)
+        #             pdb.__setitem__(exmsg['data']['key'], exmsg['data']['value'])
+        #             #pdb.closedb(exmsg['data']['key'])
+        #
+        #         else:
+        #             if exmsg['data']['action'] == 'delete':
+        #                 print('delete')
+        #                 path = join(config.storage, 'data')
+        #                 pdb = persistdb(path)
+        #                 pdb.__delitem__(msg['data']['key'])
+        #                 #pdb.closedb(exmsg['data']['key'])
+
         resp = {'type': 'response_append', 'success': success,
                 'term': self.persist['currentTerm'],
                 'matchIndex': self.log.index}
         self.orchestrator.send_peer(peer, resp)
+
 
 
 class Candidate(Follower):
@@ -313,7 +334,8 @@ class Leader(State):
             self.orchestrator.send_peer(peer, msg)
 
         #print(msg)
-        timeout = randrange(1, 4) * 10 ** (-1 if config.debug else -2)
+        #timeout = randrange(1, 4) * 10 ** (-1 if config.debug else -2)
+        timeout = 1
         #print(timeout)
         loop = asyncio.get_event_loop()
         self.append_timer = loop.call_later(timeout, self.send_append_entries)
