@@ -204,25 +204,6 @@ class Follower(State):
 
         self._update_cluster()
 
-        # if len(msg['entries']) != 0:
-        #     exmsg = msg['entries'][0]
-        #     print(exmsg)
-        #     if exmsg['data']['key'] != 'cluster':
-        #         if exmsg['data']['action'] == 'change':
-        #             print('change')
-        #             path = join(config.storage, 'data')
-        #             pdb = persistdb(path)
-        #             pdb.__setitem__(exmsg['data']['key'], exmsg['data']['value'])
-        #             #pdb.closedb(exmsg['data']['key'])
-        #
-        #         else:
-        #             if exmsg['data']['action'] == 'delete':
-        #                 print('delete')
-        #                 path = join(config.storage, 'data')
-        #                 pdb = persistdb(path)
-        #                 pdb.__delitem__(msg['data']['key'])
-        #                 #pdb.closedb(exmsg['data']['key'])
-
         resp = {'type': 'response_append', 'success': success,
                 'term': self.persist['currentTerm'],
                 'matchIndex': self.log.index}
@@ -363,9 +344,11 @@ class Leader(State):
 
         if msg['data']['action'] == 'change':
             pdb.__setitem__(msg['data']['key'], msg['data']['value'])
+            pdb.closedb(msg['data']['key'])
         else:
             if msg['data']['action'] == 'delete':
                 pdb.__delitem__(msg['data']['key'])
+                pdb.closedb(msg['data']['key'])
 
         entry = {'term': self.persist['currentTerm'], 'data': msg['data']}
 
