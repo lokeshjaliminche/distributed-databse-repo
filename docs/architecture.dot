@@ -1,7 +1,0 @@
-digraph G {
-  "Client transport" -> Orchestrator;
-  "Peer transport" -> Orchestrator;
-  Orchestrator -> Follower;
-  Orchestrator -> Candidate;
-  Orchestrator -> Leader;
-}
