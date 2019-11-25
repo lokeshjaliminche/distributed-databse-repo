@@ -16,6 +16,7 @@ print(sum_insert)
 avg = sum_insert / total_op
 print('avg', avg)
 
+time.sleep(3)
 #GET operation run
 sum_get = 0
 for x in range(1, total_op):

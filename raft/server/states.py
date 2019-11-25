@@ -367,6 +367,8 @@ class Leader(State):
             if msg['data']['action'] == 'delete':
                 pdb.__delitem__(msg['data']['key'])
 
+        pdb.closedb(msg['data']['key'])
+
         entry = {'term': self.persist['currentTerm'], 'data': msg['data']}
 
         if msg['data']['key'] == 'cluster':
