@@ -20,12 +20,19 @@ arguments = len(sys.argv) - 1
 if arguments < 1:
     print('Enter the path to db')
     exit()
+
 while True:
     # establish a connection
     clientsocket,addr = serversocket.accept()
     msg = clientsocket.recv(1024)
     path = sys.argv[2]
-    db = plyvel.DB(path, create_if_missing=True)
+    opendb = 1
+    try:
+        db = plyvel.DB(path, create_if_missing=True)
+    except:
+        continue
+
+
     msg = db.get(msg)
     db.close()
     
