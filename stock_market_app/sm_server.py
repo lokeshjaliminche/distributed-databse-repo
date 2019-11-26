@@ -27,9 +27,12 @@ while True:
     path = sys.argv[2]
     db = plyvel.DB(path, create_if_missing=True)
     msg = db.get(msg)
-    #print (msg.decode('ascii'))
-    print("Got a connection from %s" % str(addr))
-
+    db.close()
+    
+    if not msg:
+        print("Value does not exist")
+        clientsocket.send(b'None')
+        continue
 
     clientsocket.send(bytes(msg))
     clientsocket.close()
