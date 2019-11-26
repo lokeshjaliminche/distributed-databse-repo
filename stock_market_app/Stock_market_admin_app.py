@@ -1,5 +1,4 @@
 from raft.client import DistributedDict
-import transaction
 from threading import Thread
 d=DistributedDict('127.0.0.1',5254)
 d['GOOG']=0

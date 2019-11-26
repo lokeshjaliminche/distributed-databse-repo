@@ -15,7 +15,10 @@ port = int(sys.argv[1])
 # connection to hostname on the port.
 s.connect((host, port))                               
 
-s.send(b'STX')
+stck=input('Enter the stock code ')
+
+s.send(str.encode(stck))
+
 # Receive no more than 1024 bytes
 msg = s.recv(1024)                                     
 

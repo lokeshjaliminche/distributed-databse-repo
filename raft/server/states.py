@@ -358,16 +358,21 @@ class Leader(State):
 
     def on_client_append(self, protocol, msg):
         """Append new entries to Leader log."""
-        path = join(config.storage, 'data')
-        pdb = persistdb(path)
 
+        print(msg)
         if msg['data']['action'] == 'change':
+            path = join(config.storage, 'data')
+            pdb = persistdb(path)
             pdb.__setitem__(msg['data']['key'], msg['data']['value'])
+            pdb.closedb(msg['data']['key'])
         else:
             if msg['data']['action'] == 'delete':
+                path = join(config.storage, 'data')
+                pdb = persistdb(path)
                 pdb.__delitem__(msg['data']['key'])
+                pdb.closedb(msg['data']['key'])
 
-        pdb.closedb(msg['data']['key'])
+
 
         entry = {'term': self.persist['currentTerm'], 'data': msg['data']}
 
