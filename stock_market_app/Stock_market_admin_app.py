@@ -1,7 +1,6 @@
 from raft.client import DistributedDict
 from threading import Thread
 d=DistributedDict('127.0.0.1',5254)
-d['GOOG']=0
 def t1():
     try:
         stck=input('Enter the stock code ')
